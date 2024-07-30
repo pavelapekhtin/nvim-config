@@ -7,10 +7,18 @@ return {
 		event = "VeryLazy",
 	},
 	{
+		"tpope/vim-surround",
+		event = "VeryLazy",
+	},
+	{
+		"tpope/vim-repeat",
+		event = "VeryLazy",
+	},
+	{
 		"cappyzawa/trim.nvim",
 		event = "VeryLazy",
 		opts = {
-			ft_blocklist = {"markdown"},
+			ft_blocklist = { "markdown" },
 		},
 	},
 }
