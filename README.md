@@ -1,4 +1,4 @@
-This repository is a fork of (DreamNvim)[https://github.com/dreamsofcode-io/DreamNvim] with some additional plugins.
+This repository is a fork of (https://github.com/dreamsofcode-io/DreamNvim)[DreamNvim] with some additional plugins.
 
 ## Installation
 
