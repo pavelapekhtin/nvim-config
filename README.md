@@ -1,6 +1,4 @@
-# DreamNvim
-
-This repository holds the base Neovim configuration of Dreams of Code, for use in videos as a starting point in tutorials
+This repository is a fork of (DreamNvim)[https://github.com/dreamsofcode-io/DreamNvim] with some additional plugins.
 
 ## Installation
 
@@ -18,7 +16,7 @@ rm -rf ~/.local/share/nvim
 To install this configuration on Linux & macOS, run the following command:
 
 ```
-git clone git@github.com:dreamsofcode-io/DreamNvim.git ~/.config/nvim
+git clone git@github.com:pavelapekhtin/nvim-config.git ~/.config/nvim
 ```
 
 Then, open up neovim in order to download and install the base configuration packages.
