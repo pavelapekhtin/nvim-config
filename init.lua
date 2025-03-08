@@ -59,7 +59,7 @@ vim.opt.splitbelow = true
 --  See `:help 'list'`
 --  and `:help 'listchars'`
 vim.opt.list = true
-vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
+vim.opt.listchars = { tab = "| ", trail = "·", nbsp = "␣" }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = "split"
@@ -103,9 +103,21 @@ vim.keymap.set("n", "<C-l>", "<C-w><C-l>", { desc = "Move focus to the right win
 vim.keymap.set("n", "<C-j>", "<C-w><C-j>", { desc = "Move focus to the lower window" })
 vim.keymap.set("n", "<C-k>", "<C-w><C-k>", { desc = "Move focus to the upper window" })
 
--- [[ Basic Autocommands ]]
+-- Normal mode: Move current line up with Shift+K
+vim.keymap.set("n", "K", ":m .-2<CR>==", { noremap = true, silent = true })
+
+-- Normal mode: Move current line down with Shift+J
+vim.keymap.set("n", "J", ":m .+1<CR>==", { noremap = true, silent = true })
+
+-- Visual mode: Move selected lines up with Shift+K
+vim.keymap.set("v", "K", ":m '<-2<CR>gv=gv", { noremap = true, silent = true })
+
+-- Visual mode: Move selected lines down with Shift+J
+vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
+
 --  See `:help lua-guide-autocommands`
 
+-- [[ Basic Autocommands ]]
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`

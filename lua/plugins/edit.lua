@@ -21,4 +21,8 @@ return {
 			ft_blocklist = { "markdown" },
 		},
 	},
+	{
+		"jiangmiao/auto-pairs",
+		event = "VeryLazy",
+	},
 }
