@@ -22,7 +22,18 @@ return {
 		},
 	},
 	{
-		"jiangmiao/auto-pairs",
-		event = "VeryLazy",
+		"windwp/nvim-autopairs",
+		event = "InsertEnter",
+		config = function()
+			require("nvim-autopairs").setup({})
+			-- Disable auto-pairs for large files to improve performance
+			vim.api.nvim_create_autocmd("BufReadPre", {
+				callback = function()
+					if vim.b.large_file then
+						vim.b.autopairs_enabled = 0
+					end
+				end,
+			})
+		end,
 	},
 }
