@@ -1,11 +1,14 @@
+-- IMPORTANT: Set leader key first before anything else
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
 -- Enable Lua module bytecode caching for better performance
 vim.loader.enable()
 
--- Set <space> as the leader key
--- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
+-- Check if we're running in Cursor editor (which doesn't set vim.g.cursor automatically)
+if vim.env.CURSOR then
+  vim.g.cursor = true
+end
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -32,7 +35,7 @@ vim.opt.showmode = false
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.schedule(function()
-	vim.opt.clipboard = "unnamedplus"
+  vim.opt.clipboard = "unnamedplus"
 end)
 
 -- Enable break indent
@@ -130,22 +133,22 @@ vim.keymap.set("v", "J", ":m '>+1<CR>gv=gv", { noremap = true, silent = true })
 --  Try it with `yap` in normal mode
 --  See `:help vim.highlight.on_yank()`
 vim.api.nvim_create_autocmd("TextYankPost", {
-	desc = "Highlight when yanking (copying) text",
-	group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
-	callback = function()
-		vim.highlight.on_yank()
-	end,
+  desc = "Highlight when yanking (copying) text",
+  group = vim.api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank()
+  end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
-	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-	if vim.v.shell_error ~= 0 then
-		error("Error cloning lazy.nvim:\n" .. out)
-	end
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    error("Error cloning lazy.nvim:\n" .. out)
+  end
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
@@ -160,14 +163,27 @@ vim.opt.rtp:prepend(lazypath)
 --    :Lazy update
 --
 -- NOTE: Here is where you install your plugins.
-require("lazy").setup("plugins")
+--require("lazy").setup("plugins")
+
+-- Configure the Lazy plugin manager
+require("lazy").setup({
+  -- Define the plugin specifications based on environment
+  { import = "plugins",        cond = (function() return not vim.g.vscode and not vim.g.cursor end) },
+  { import = "plugins.vscode", cond = (function() return vim.g.vscode or vim.g.cursor end) },
+})
+
+-- Load VSCode specific configuration if running in VSCode or Cursor
+if vim.g.vscode or vim.g.cursor then
+  -- Load the VSCode specific configuration
+  require("vscode")
+end
+
 -- NOTE: Plugins can also be added by using a table,
 -- with the first argument being the link and the following
 -- keys can be used to configure plugin behavior/loading/etc.
 --
 -- Use `opts = {}` to automatically pass options to a plugin's `setup()` function, forcing the plugin to be loaded.
 --
-
 -- Alternatively, use `config = function() ... end` for full control over the configuration.
 -- If you prefer to call `setup` explicitly, use:
 --    {
