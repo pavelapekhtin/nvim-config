@@ -95,19 +95,32 @@ return {
 		name = "colorscheme-switcher",
 		priority = 1001,
 		config = function()
+			-- Function to check if macOS is in light mode
+			local function is_macos_light_mode()
+				local handle = io.popen('defaults read -g AppleInterfaceStyle 2>/dev/null')
+				if handle then
+					local result = handle:read("*a")
+					handle:close()
+					-- If the command returns "Dark", we're in dark mode
+					-- If it returns nothing (empty string), we're in light mode
+					return result == ""
+				end
+				return false -- Default to dark mode if we can't determine
+			end
+
 			-- Function to check if current file is in mainvault directory
 			local function is_in_mainvault()
 				local current_file = vim.fn.expand('%:p')
 				return current_file:match('/mainvault/') ~= nil
 			end
 
-			-- Function to set colorscheme based on file location
+			-- Function to set colorscheme based on file location and system appearance
 			local function set_colorscheme()
 				if not vim.g.vscode and not vim.g.cursor then
-					if is_in_mainvault() then
-						vim.cmd.colorscheme("catppuccin-latte") -- Latte theme for mainvault
+					if is_in_mainvault() and is_macos_light_mode() then
+						vim.cmd.colorscheme("catppuccin-latte") -- Latte theme for mainvault in light mode
 					else
-						vim.cmd.colorscheme("tokyonight-night") -- Tokyo Night for other files
+						vim.cmd.colorscheme("tokyonight-night") -- Tokyo Night for other cases
 					end
 				end
 			end
@@ -119,6 +132,12 @@ return {
 			vim.api.nvim_create_autocmd("BufEnter", {
 				callback = set_colorscheme,
 			})
+
+			-- Create a timer to check system appearance periodically (every 5 seconds)
+			local timer = vim.loop.new_timer()
+			timer:start(0, 5000, vim.schedule_wrap(function()
+				set_colorscheme()
+			end))
 		end,
 	},
 }
