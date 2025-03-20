@@ -10,11 +10,7 @@ return {
 		priority = 1000,
 		config = function()
 			require("catppuccin").setup({
-				flavour = "auto",
-				background = {
-					light = "latte",
-					dark = "mocha",
-				},
+				flavour = "latte",
 				transparent_background = false,
 				show_end_of_buffer = false,
 				term_colors = false,
@@ -67,7 +63,10 @@ return {
 					which_key = true,
 					indent_blankline = { enabled = true },
 					notify = true,
-					noice = true,
+					noice = {
+						enabled = true,
+						custom_hlgroups = {},
+					},
 					mini = true,
 					mason = true,
 					neotree = {
@@ -84,6 +83,7 @@ return {
 		priority = 1000,
 		config = function()
 			require("tokyonight").setup({
+				style = "night",
 				styles = {
 					comments = { italic = false },
 				},
@@ -101,26 +101,34 @@ return {
 				if handle then
 					local result = handle:read("*a")
 					handle:close()
-					-- If the command returns "Dark", we're in dark mode
-					-- If it returns nothing (empty string), we're in light mode
 					return result == ""
 				end
-				return false -- Default to dark mode if we can't determine
+				return false
 			end
 
-			-- Function to check if current file is in mainvault directory
-			local function is_in_mainvault()
-				local current_file = vim.fn.expand('%:p')
-				return current_file:match('/mainvault/') ~= nil
+			-- Function to check if any buffer is in mainvault directory
+			local function has_mainvault_buffer()
+				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+					if vim.api.nvim_buf_is_loaded(buf) then
+						local bufname = vim.api.nvim_buf_get_name(buf)
+						if bufname:match('/mainvault/') then
+							return true
+						end
+					end
+				end
+				return false
 			end
 
-			-- Function to set colorscheme based on file location and system appearance
+			-- Function to set colorscheme
 			local function set_colorscheme()
 				if not vim.g.vscode and not vim.g.cursor then
-					if is_in_mainvault() and is_macos_light_mode() then
-						vim.cmd.colorscheme("catppuccin-latte") -- Latte theme for mainvault in light mode
+					local is_light = is_macos_light_mode()
+					local has_mainvault = has_mainvault_buffer()
+					
+					if has_mainvault and is_light then
+						vim.cmd.colorscheme("catppuccin-latte")
 					else
-						vim.cmd.colorscheme("tokyonight-night") -- Tokyo Night for other cases
+						vim.cmd.colorscheme("tokyonight-night")
 					end
 				end
 			end
@@ -128,16 +136,24 @@ return {
 			-- Set initial colorscheme
 			set_colorscheme()
 
-			-- Create autocommand to change colorscheme when switching buffers
-			vim.api.nvim_create_autocmd("BufEnter", {
+			-- Create autocommands to change colorscheme when switching buffers or windows
+			vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufRead" }, {
 				callback = set_colorscheme,
 			})
 
-			-- Create a timer to check system appearance periodically (every 5 seconds)
+			-- Create a timer to check system appearance periodically (every 10 seconds)
 			local timer = vim.loop.new_timer()
-			timer:start(0, 5000, vim.schedule_wrap(function()
+			timer:start(0, 10000, vim.schedule_wrap(function()
 				set_colorscheme()
 			end))
+
+			-- Clean up timer when Neovim exits
+			vim.api.nvim_create_autocmd("VimLeavePre", {
+				callback = function()
+					timer:stop()
+					timer:close()
+				end,
+			})
 		end,
 	},
 }
