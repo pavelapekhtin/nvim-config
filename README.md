@@ -75,6 +75,31 @@ Each video will have a branch associated with it that will lock the configuratio
 
 There is no guarantee that these will work forever, especially as neovim develops.
 
+## Language Support
+
+This configuration includes full support for:
+
+### C/C++/Objective-C/Objective-C++
+- **LSP**: clangd for code completion, diagnostics, and navigation
+- **Syntax Highlighting**: Tree-sitter parsers for C, C++, and Objective-C
+- **Formatting**: clang-format integration with custom configuration
+- **File Types**: Automatic detection of `.mm` files as Objective-C++
+- **Features**:
+  - Header/source file switching with `<leader>ch`
+  - Quick compile and run with `<leader>cc`
+  - Code formatting with `<leader>cf`
+  - Header guard generation for C++ (headers only)
+  - Interface/implementation skeletons for Objective-C/C++
+
+### Other Languages
+- **Lua**: Full LSP, formatting, and completion support
+- **Go**: LSP with gopls, formatting with gofumpt/goimports
+- **Rust**: LSP with rust-analyzer, formatting with rustfmt
+- **Python**: LSP support configured
+- **Markdown**: Enhanced rendering and LSP support
+
+For detailed C/C++/Objective-C setup information, see `C_CPP_OBJC_SETUP.md`.
+
 ## Contribution
 
 Please feel free to contribute to this configuration.

@@ -225,10 +225,35 @@ return {
 			--  - settings (table): Override the default settings passed when initializing the server.
 			--        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
 			local servers = {
-				-- clangd = {},
-				-- gopls = {},
+				clangd = {
+					filetypes = { "c", "cpp", "objc", "objcpp" },
+					cmd = {
+						"clangd",
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
+						"--function-arg-placeholders",
+						"--fallback-style=llvm",
+					},
+					init_options = {
+						usePlaceholders = true,
+						completeUnimported = true,
+						clangdFileStatus = true,
+					},
+					capabilities = {
+						offsetEncoding = "utf-16",
+					},
+				},
+				-- gopls = {
+				-- 	filetypes = { "go", "gomod", "gowork", "gotmpl" },
+				-- },
 				-- pyright = {},
-				-- rust_analyzer = {},
+				rust_analyzer = {
+					cargo = {
+						features = { "all" },
+					},
+				},
 				-- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
 				--
 				-- Some languages (like typescript) have entire language plugins that can be useful:
@@ -270,6 +295,11 @@ return {
 			local ensure_installed = vim.tbl_keys(servers or {})
 			vim.list_extend(ensure_installed, {
 				"stylua", -- Used to format Lua code
+				"clang-format", -- Used to format C/C++/Objective-C code
+				-- "gofumpt", -- Go formatter
+				-- "goimports", -- Go import organizer
+				-- "golines", -- Go line formatter
+				"rustfmt", -- Rust formatter
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
@@ -323,6 +353,10 @@ return {
 			end,
 			formatters_by_ft = {
 				lua = { "stylua" },
+				c = { "clang-format" },
+				cpp = { "clang-format" },
+				objc = { "clang-format" },
+				objcpp = { "clang-format" },
 				-- Conform can also run multiple formatters sequentially
 				-- python = { "isort", "black" },
 				--
@@ -373,6 +407,8 @@ return {
 			ensure_installed = {
 				"bash",
 				"c",
+				"cpp",
+				"objc",
 				"diff",
 				"python",
 				"html",

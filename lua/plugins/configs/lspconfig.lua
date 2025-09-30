@@ -1,22 +1,18 @@
+-- This file is now minimal since LSP configurations are handled
+-- in the main code.lua file through the servers table.
+--
+-- The servers table in code.lua manages:
+-- - clangd (C/C++/Objective-C/Objective-C++)
+-- - gopls (Go)
+-- - rust_analyzer (Rust)
+-- - lua_ls (Lua)
+--
+-- If you need to add custom LSP configurations that aren't
+-- managed by mason-lspconfig, you can add them here.
+
 local lspconfig = require("lspconfig")
 
-lspconfig.lua_ls.setup({
-    settings = {
-        Lua = {
-            diagnostics = {
-                globals = { "vim" },
-                disable = { "different-requires" },
-            },
-        },
-    },
-})
-
-lspconfig.rust_analyzer.setup({
-    cargo = {
-        features = { "all" },
-    },
-})
-
-lspconfig.gopls.setup({
-    filetypes = { "go", "gomod", "gowork", "gotmpl" },
-})
+-- Example of a custom LSP configuration that might not be in Mason:
+-- lspconfig.custom_lsp.setup({
+--     -- custom configuration here
+-- })
