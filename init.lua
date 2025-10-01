@@ -5,10 +5,7 @@ vim.g.maplocalleader = " "
 -- Enable Lua module bytecode caching for better performance
 vim.loader.enable()
 
--- Check if we're running in Cursor editor (which doesn't set vim.g.cursor automatically)
-if vim.env.CURSOR then
-	vim.g.cursor = true
-end
+
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
@@ -170,26 +167,13 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Configure the Lazy plugin manager
 require("lazy").setup({
-	-- Define the plugin specifications based on environment
+	-- Import all plugins
 	{
 		import = "plugins",
-		cond = function()
-			return not vim.g.vscode and not vim.g.cursor
-		end,
-	},
-	{
-		import = "plugins.vscode",
-		cond = function()
-			return vim.g.vscode or vim.g.cursor
-		end,
 	},
 })
 
--- Load VSCode specific configuration if running in VSCode or Cursor
-if vim.g.vscode or vim.g.cursor then
-	-- Load the VSCode specific configuration
-	require("vscode")
-end
+
 
 -- NOTE: Plugins can also be added by using a table,
 -- with the first argument being the link and the following

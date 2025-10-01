@@ -121,15 +121,13 @@ return {
 
 			-- Function to set colorscheme
 			local function set_colorscheme()
-				if not vim.g.vscode and not vim.g.cursor then
-					local is_light = is_macos_light_mode()
-					local has_mainvault = has_mainvault_buffer()
-					
-					if has_mainvault and is_light then
-						vim.cmd.colorscheme("catppuccin-latte")
-					else
-						vim.cmd.colorscheme("tokyonight-night")
-					end
+				local is_light = is_macos_light_mode()
+				local has_mainvault = has_mainvault_buffer()
+
+				if has_mainvault and is_light then
+					vim.cmd.colorscheme("catppuccin-latte")
+				else
+					vim.cmd.colorscheme("tokyonight-night")
 				end
 			end
 
