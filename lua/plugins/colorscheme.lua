@@ -90,68 +90,68 @@ return {
 			})
 		end,
 	},
-	{
-		"nvim-lua/plenary.nvim",
-		name = "colorscheme-switcher",
-		priority = 1001,
-		config = function()
-			-- Function to check if macOS is in light mode
-			local function is_macos_light_mode()
-				local handle = io.popen('defaults read -g AppleInterfaceStyle 2>/dev/null')
-				if handle then
-					local result = handle:read("*a")
-					handle:close()
-					return result == ""
-				end
-				return false
-			end
-
-			-- Function to check if any buffer is in mainvault directory
-			local function has_mainvault_buffer()
-				for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-					if vim.api.nvim_buf_is_loaded(buf) then
-						local bufname = vim.api.nvim_buf_get_name(buf)
-						if bufname:match('/mainvault/') then
-							return true
-						end
-					end
-				end
-				return false
-			end
-
-			-- Function to set colorscheme
-			local function set_colorscheme()
-				local is_light = is_macos_light_mode()
-				local has_mainvault = has_mainvault_buffer()
-
-				if has_mainvault and is_light then
-					vim.cmd.colorscheme("catppuccin-latte")
-				else
-					vim.cmd.colorscheme("tokyonight-night")
-				end
-			end
-
-			-- Set initial colorscheme
-			set_colorscheme()
-
-			-- Create autocommands to change colorscheme when switching buffers or windows
-			vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufRead" }, {
-				callback = set_colorscheme,
-			})
-
-			-- Create a timer to check system appearance periodically (every 10 seconds)
-			local timer = vim.loop.new_timer()
-			timer:start(0, 10000, vim.schedule_wrap(function()
-				set_colorscheme()
-			end))
-
-			-- Clean up timer when Neovim exits
-			vim.api.nvim_create_autocmd("VimLeavePre", {
-				callback = function()
-					timer:stop()
-					timer:close()
-				end,
-			})
-		end,
-	},
+	-- {
+	-- 	"nvim-lua/plenary.nvim",
+	-- 	name = "colorscheme-switcher",
+	-- 	priority = 1001,
+	-- 	config = function()
+	-- 		-- Function to check if macOS is in light mode
+	-- 		local function is_macos_light_mode()
+	-- 			local handle = io.popen('defaults read -g AppleInterfaceStyle 2>/dev/null')
+	-- 			if handle then
+	-- 				local result = handle:read("*a")
+	-- 				handle:close()
+	-- 				return result == ""
+	-- 			end
+	-- 			return false
+	-- 		end
+	--
+	-- 		-- Function to check if any buffer is in mainvault directory
+	-- 		local function has_mainvault_buffer()
+	-- 			for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+	-- 				if vim.api.nvim_buf_is_loaded(buf) then
+	-- 					local bufname = vim.api.nvim_buf_get_name(buf)
+	-- 					if bufname:match('/mainvault/') then
+	-- 						return true
+	-- 					end
+	-- 				end
+	-- 			end
+	-- 			return false
+	-- 		end
+	--
+	-- 		-- Function to set colorscheme
+	-- 		local function set_colorscheme()
+	-- 			local is_light = is_macos_light_mode()
+	-- 			local has_mainvault = has_mainvault_buffer()
+	--
+	-- 			if has_mainvault and is_light then
+	-- 				vim.cmd.colorscheme("catppuccin-latte")
+	-- 			else
+	-- 				vim.cmd.colorscheme("tokyonight-night")
+	-- 			end
+	-- 		end
+	--
+	-- 		-- Set initial colorscheme
+	-- 		set_colorscheme()
+	--
+	-- 		-- Create autocommands to change colorscheme when switching buffers or windows
+	-- 		vim.api.nvim_create_autocmd({ "BufEnter", "WinEnter", "BufRead" }, {
+	-- 			callback = set_colorscheme,
+	-- 		})
+	--
+	-- 		-- Create a timer to check system appearance periodically (every 10 seconds)
+	-- 		local timer = vim.loop.new_timer()
+	-- 		timer:start(0, 10000, vim.schedule_wrap(function()
+	-- 			set_colorscheme()
+	-- 		end))
+	--
+	-- 		-- Clean up timer when Neovim exits
+	-- 		vim.api.nvim_create_autocmd("VimLeavePre", {
+	-- 			callback = function()
+	-- 				timer:stop()
+	-- 				timer:close()
+	-- 			end,
+	-- 		})
+	-- 	end,
+	-- },
 }
