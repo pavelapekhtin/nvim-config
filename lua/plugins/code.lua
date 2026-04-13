@@ -299,7 +299,7 @@ return {
 				-- "gofumpt", -- Go formatter
 				-- "goimports", -- Go import organizer
 				-- "golines", -- Go line formatter
-				"rustfmt", -- Rust formatter
+				-- "rustfmt", -- Rust formatter (installed via rustup, not Mason)
 			})
 			require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
