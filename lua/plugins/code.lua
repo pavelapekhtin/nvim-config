@@ -399,13 +399,24 @@ return {
 		end,
 	},
 	{ -- Highlight, edit, and navigate code
+		--
+		-- nvim-treesitter `main` branch (the rewrite for Neovim 0.10+).
+		-- The old `master` branch is archived and incompatible with Neovim 0.12.
+		--
+		-- Key differences from master:
+		--   * No `configs.setup{}` module — parsers are installed via `install()`.
+		--   * No auto-enabled highlight/indent — must be turned on per-filetype.
+		--   * Lazy-loading is unsupported (`lazy = false` required).
+		--
+		-- Requires: `tree-sitter-cli` >= 0.26.1 on $PATH.
+		--   Install with: brew install tree-sitter-cli
 		"nvim-treesitter/nvim-treesitter",
-		branch = "master",
+		branch = "main",
+		lazy = false,
 		build = ":TSUpdate",
-		-- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-		main = "nvim-treesitter.configs",
-		opts = {
-			ensure_installed = {
+		config = function()
+			-- Parsers to ensure installed. Additional ones can be added via :TSInstall.
+			local parsers = {
 				"bash",
 				"c",
 				"cpp",
@@ -420,24 +431,45 @@ return {
 				"query",
 				"vim",
 				"vimdoc",
-			},
-			-- Autoinstall languages that are not installed
-			auto_install = true,
-			highlight = {
-				enable = true,
-				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-				--  If you are experiencing weird indenting issues, add the language to
-				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
-		},
-		-- There are additional nvim-treesitter modules that you can use to interact
-		-- with nvim-treesitter. You should go explore a few and see what interests you:
-		--
-		--    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-		--    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-		--    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+			}
+
+			require("nvim-treesitter").setup({
+				install_dir = vim.fn.stdpath("data") .. "/site",
+			})
+
+			-- Install any missing parsers (no-op if already installed; async).
+			require("nvim-treesitter").install(parsers)
+
+			-- Enable highlighting, indent, and folds for any filetype that has
+			-- a treesitter parser available. Runs per-buffer on FileType.
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("user.treesitter", { clear = true }),
+				callback = function(args)
+					local buf = args.buf
+					local ft = vim.bo[buf].filetype
+					local lang = vim.treesitter.language.get_lang(ft)
+					if not lang then
+						return
+					end
+
+					-- Skip if the parser isn't actually installed yet.
+					local ok = pcall(vim.treesitter.start, buf, lang)
+					if not ok then
+						return
+					end
+
+					-- Indent (experimental per upstream). Skip for filetypes that
+					-- prefer vim's native indent.
+					local skip_indent = { ruby = true }
+					if not skip_indent[ft] then
+						vim.bo[buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+					end
+				end,
+			})
+		end,
+		-- Additional companion plugins to explore later:
+		--    - Context: https://github.com/nvim-treesitter/nvim-treesitter-context
+		--    - Textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects (main-branch compatible version)
 	},
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
